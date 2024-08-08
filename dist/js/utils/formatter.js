@@ -7,19 +7,16 @@ function formatarMoeda(valor) {
 }
 exports.formatarMoeda = formatarMoeda;
 function formatarData(data, formato = FormatoData_js_1.FormatoData.PADRAO) {
-    if (formato == FormatoData_js_1.FormatoData.DIA_SEMANA_DIA_MES_ANO) {
+    if (formato === FormatoData_js_1.FormatoData.DIA_SEMANA_DIA_MES_ANO) {
         return data.toLocaleDateString("pt-br", {
             weekday: "long",
             day: "2-digit",
             month: "2-digit",
-            year: "numeric",
+            year: "numeric"
         });
     }
-    else if (formato == FormatoData_js_1.FormatoData.DIA_MES) {
-        return data.toLocaleDateString("pt-br", {
-            day: "2-digit",
-            month: "2-digit",
-        });
+    else if (formato === FormatoData_js_1.FormatoData.DIA_MES) {
+        return data.toLocaleDateString("pt-br", { day: "2-digit", month: "2-digit" });
     }
     return data.toLocaleDateString("pt-br");
 }

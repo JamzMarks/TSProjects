@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
       "target": "ES2022",                                  // Define a versão do JavaScript alvo
-      "module": "commonjs",                             // Define o sistema de módulos
+      //"module": "commonjs",                             // Define o sistema de módulos
       "strict": true,                                   // Ativa o modo estrito
       "forceConsistentCasingInFileNames": true,         // Força o uso consistente de maiúsculas e minúsculas nos nomes dos arquivos
       "outDir": "./dist/js/",                               // Define o diretório de saída para os arquivos compilados
