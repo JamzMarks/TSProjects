@@ -19,6 +19,8 @@
       "noImplicitReturns": true,                        // Gera erros se nem todos os caminhos de uma função retornarem um valor
       "noFallthroughCasesInSwitch": true,                // Gera erros para casos de switch que não têm break ou return
       "noEmitOnError": true,
+      "experimentalDecorators": true,
+
     },
     "include": [
       "./src/**/*"                                        // Inclui todos os arquivos no diretório `src`
