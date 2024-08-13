@@ -18,19 +18,14 @@ elementoFormulario.addEventListener("submit", function (event) {
         const novaTransacao = {
             tipoTransacao: tipoTransacao,
             valor: valor,
-            data: data
+            data: data,
         };
         Conta.registrarTransacao(novaTransacao);
         SaldoComponent.atualizar();
-        elementoFormulario.reset();
         ExtratoComponent.atualizar();
+        elementoFormulario.reset();
     }
-    catch (erro) {
-        if (erro instanceof Error) {
-            alert(erro.message);
-        }
-        else {
-            alert("Ocorreu um erro desconhecido.");
-        }
+    catch (error) {
+        alert(`Erro: ${error.message}`);
     }
 });

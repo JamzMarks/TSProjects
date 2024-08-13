@@ -1,79 +1,95 @@
-import { Transacao } from "./Transacao.js";
-import { TipoTransacao } from "./TipoTransacao.js";
+import { Armazenador } from "./Armazenador.js";
 import { GrupoTransacao } from "./GrupoTransacao.js";
+import { TipoTransacao } from "./TipoTransacao.js";
+import { Transacao } from "./Transacao.js";
 
-let saldo: number = JSON.parse(localStorage.getItem("saldo")|| "0");
+export class Conta {
+    protected nome: string;
+    protected saldo: number = Armazenador.obter("saldo") || 0;
+    private transacoes: Transacao[] = Armazenador.obter(("transacoes"), (key: string, value: any) => {
+        if (key === "data") {
+            return new Date(value);
+        }
+        return value;
+    }) || [];
 
-const transacoes: Transacao[] = JSON.parse(localStorage.getItem("transacoes") || "[]", (key: string, value: string) =>{
-    if(key == "data"){
-        return new Date(value);
+    constructor(nome: string) {
+        this.nome = nome;
     }
-    return value
-});
-
-function debitar(valor: number): void {
-    if(valor <= 0){
-        throw new Error("O valor a ser debitado deve ser maior que zero")
+    public getTitular() {
+        return this.nome
     }
-    if(valor > saldo){
-        throw new Error("Valor insuficiente")
-    } 
-    saldo -= valor
-    localStorage.setItem("saldo", saldo.toString());
-}
-function depositar(valor: number): void {
-    if(valor <= 0){
-        throw new Error("O valor a ser depositado deve ser maior que zero")
-    } 
-    saldo += valor;
-    localStorage.setItem("saldo", saldo.toString());
-}
-
-const Conta = {
-    getSaldo() {
-        return saldo;
-    },
-
-    getDataAcesso(): Date {
-        return new Date();
-    },
-    getGrupoTransacoes(): GrupoTransacao[]{
+    getGruposTransacoes(): GrupoTransacao[] {
         const gruposTransacoes: GrupoTransacao[] = [];
-        const listaTransacoes: Transacao[] = structuredClone(transacoes);
-        const transacoesOrdernadas: Transacao[] = listaTransacoes.sort((t1,t2) => t2.data.getTime() - t1.data.getTime());
+        const listaTransacoes: Transacao[] = structuredClone(this.transacoes);
+        const transacoesOrdenadas: Transacao[] = listaTransacoes.sort((t1, t2) => t2.data.getTime() - t1.data.getTime());
         let labelAtualGrupoTransacao: string = "";
 
-        for(let transacao of transacoesOrdernadas){
-            let labelGrupoTransacao: string = transacao.data.toLocaleDateString("pt-br", {month: "long", year: "numeric"}); 
-            if(labelAtualGrupoTransacao != labelGrupoTransacao){
+        for (let transacao of transacoesOrdenadas) {
+            let labelGrupoTransacao: string = transacao.data.toLocaleDateString("pt-br", { month: "long", year: "numeric" });
+            if (labelAtualGrupoTransacao !== labelGrupoTransacao) {
                 labelAtualGrupoTransacao = labelGrupoTransacao;
                 gruposTransacoes.push({
                     label: labelGrupoTransacao,
                     transacoes: []
                 });
             }
-            gruposTransacoes.at(-1)?.transacoes.push(transacao);
+            const ultimoGrupo = gruposTransacoes.at(-1);
+            if (ultimoGrupo) {
+                ultimoGrupo.transacoes.push(transacao);
+            } else {
+                console.error("Erro: Nenhum grupo de transação encontrado.");
+            }
         }
-        return gruposTransacoes;
-    },
 
+        return gruposTransacoes;
+    }
+
+    getSaldo() {
+        return this.saldo;
+    }
+    getDataAcesso(): Date {
+        return new Date();
+    }
     registrarTransacao(novaTransacao: Transacao): void {
         if (novaTransacao.tipoTransacao == TipoTransacao.DEPOSITO) {
-            depositar(novaTransacao.valor)
-        } 
+            this.depositar(novaTransacao.valor);
+        }
         else if (novaTransacao.tipoTransacao == TipoTransacao.TRANSFERENCIA || novaTransacao.tipoTransacao == TipoTransacao.PAGAMENTO_BOLETO) {
-            debitar(novaTransacao.valor);
+            this.debitar(novaTransacao.valor);
             novaTransacao.valor *= -1;
-        } 
+        }
         else {
             throw new Error("Tipo de Transação é inválido!");
-           
         }
 
-        transacoes.push(novaTransacao);
-        console.log(this.getGrupoTransacoes());
-        localStorage.setItem("transacoes", JSON.stringify(transacoes));
+        this.transacoes.push(novaTransacao);
+        console.log(this.getGruposTransacoes());
+        Armazenador.salvar("transacoes", JSON.stringify(this.transacoes));
+    }
+
+    debitar(valor: number): void {
+        if (valor <= 0) {
+            throw new Error("O valor a ser debitado deve ser maior que zero!");
+        }
+        if (valor > this.saldo) {
+            throw new Error("Saldo insuficiente!");
+        }
+
+        this.saldo -= valor;
+        Armazenador.salvar("saldo", this.saldo.toString());
+    }
+
+    depositar(valor: number): void {
+        if (valor <= 0) {
+            throw new Error("O valor a ser depositado deve ser maior que zero!");
+        }
+
+        this.saldo += valor;
+        Armazenador.salvar("saldo", this.saldo.toString());
     }
 }
 
-export default Conta;
+const conta = new Conta("Joana da Silva Olveira");
+
+export default conta;

@@ -5,7 +5,8 @@ import Conta from "../types/Conta.js";
 import ExtratoComponent from "./extrato-component.js";
 
 const elementoFormulario = document.querySelector(".block-nova-transacao form") as HTMLFormElement;
-elementoFormulario.addEventListener("submit", function(event) {
+
+elementoFormulario.addEventListener("submit", function (event) {
     try {
         event.preventDefault();
         if (!elementoFormulario.checkValidity()) {
@@ -24,19 +25,15 @@ elementoFormulario.addEventListener("submit", function(event) {
         const novaTransacao: Transacao = {
             tipoTransacao: tipoTransacao,
             valor: valor,
-            data: data
-        };
+            data: data,
+        }
 
         Conta.registrarTransacao(novaTransacao);
         SaldoComponent.atualizar();
-        elementoFormulario.reset();
         ExtratoComponent.atualizar();
-    } catch(erro){
-        if (erro instanceof Error) {
-            alert(erro.message);
-        } else {
-            alert("Ocorreu um erro desconhecido.");
-        }
+        elementoFormulario.reset();
     }
-    
+    catch (error) {
+        alert(`Erro: ${(error as Error).message}`);
+    }
 });
