@@ -1,0 +1,14 @@
+# Ignorar a pasta de saída de builds, que não precisa ser versionada
+# /dist/
+
+# Ignorar a pasta node_modules que contém dependências instaladas via npm
+/node_modules/
+
+# Ignorar arquivos de lock, se preferir que sejam gerados dinamicamente
+package-lock.json
+
+# Ignorar arquivos de configurações locais do TypeScript
+*.tsbuildinfo
+
+# Ignorar arquivos de configuração de ambiente local
+.env
